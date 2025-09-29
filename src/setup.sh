@@ -52,6 +52,48 @@ else
   echo "Created project directory: $project_path"
 fi
 
+# Construct full path for where to copy config
+proj_config="${project_path}/.proj_config/config.json"
+
+echo "DEBUG: Project config path: $proj_config"
+
+# Sanity check: Make sure the variable is not empty
+if [[ -z "$proj_config" ]]; then
+  echo "ERROR: proj_config path is empty!"
+  exit 1
+fi
+
+# Check if the config file already exists at the project_path
+if [ ! -f "$proj_config" ]; then
+    echo "DEBUG: $proj_config does not exist. Proceeding to copy."
+
+    if [ -f "$config_file" ]; then
+        echo "DEBUG: Source config file found: $config_file"
+
+        # Create the project_path directory if it doesn't exist
+        mkdir -p "${project_path}/.proj_config"
+        if [[ $? -ne 0 ]]; then
+            echo "ERROR: Failed to create directory: ${project_path}/.proj_config"
+            exit 1
+        fi
+
+        # Copy the file
+        cp "$config_file" "$proj_config"
+        if [[ $? -eq 0 ]]; then
+            echo "✔ Copied project config file to $proj_config"
+        else
+            echo "ERROR: Failed to copy config file."
+            exit 1
+        fi
+    else
+        echo "ERROR: Source config file does not exist: $config_file"
+        exit 1
+    fi
+else
+    echo "Project config file already exists: $proj_config"
+fi
+
+
 # Framework-specific setup
 case "$framework" in
   basic)
