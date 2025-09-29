@@ -85,29 +85,30 @@ case "$framework" in
     )
 
     for item in "${items[@]}"; do
-    src_path="${r_dirbase}/${item}"
-    dest_path="${project_path}/${item}"
-    parent_dir="$(dirname "$dest_path")"
+        src_path="${r_dirbase}/${item}"
+        dest_path="${project_path}/${item}"
+        parent_dir="$(dirname "$dest_path")"
 
-    if [ -e "$src_path" ]; then
-        # Create parent directory if needed
-        mkdir -p "$parent_dir"
-        if [[ $? -ne 0 ]]; then
-        echo "  - Error: Failed to create directory $parent_dir"
-        continue
-        fi
+        if [ -e "$src_path" ]; then
+            # Create parent directory if needed
+            mkdir -p "$parent_dir"
+            if [[ $? -ne 0 ]]; then
+                echo "  - Error: Failed to create directory $parent_dir"
+            continue
+            fi
 
-        # Copy the file or directory
-        cp -r "$src_path"/. "$dest_path"/
-        if [[ $? -eq 0 ]]; then
-        echo "  - Copied: $src_path -> $dest_path"
+            # Copy the file or directory
+            cp -r "$src_path"/. "$dest_path"/
+            if [[ $? -eq 0 ]]; then
+                echo "  - Copied: $src_path -> $dest_path"
+            else
+                echo "  - Error: Failed to copy $src_path"
+            fi
         else
-        echo "  - Error: Failed to copy $src_path"
-        fi
-        else
-        echo "  - Warning: Source $src_path does not exist"
+            echo "  - Warning: Source $src_path does not exist"
         fi
     done
+    
     ;;
 
     *)
