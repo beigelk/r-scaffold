@@ -1,0 +1,8 @@
+# Ignore data folder (where input data should be added)
+data/
+
+# Ignore project files (project json files)
+projects/
+
+# Ignore project configs
+.proj_config/
