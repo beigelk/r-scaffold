@@ -1,0 +1,5 @@
+{
+  "project": "new_project",
+  "framework": "basic",
+  "destination": "/destination/path/"
+}
