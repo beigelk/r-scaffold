@@ -25,6 +25,8 @@ fi
 project=$(jq -r '.project // empty' "$config_file")
 framework=$(jq -r '.framework // empty' "$config_file")
 destination=$(jq -r '.destination // empty' "$config_file")
+git_add_origin=$(jq -r '.git_add_origin // empty' "$config_file")
+gh_username=$(jq -r '.gh_username // empty' "$config_file")
 
 # Validate required fields
 if [[ -z "$project" || -z "$framework" || -z "$destination" ]]; then
@@ -112,3 +114,58 @@ case "$framework" in
     echo "Warning: Framework '$framework' is not recognized. No specific setup done."
     ;;
 esac
+
+if [ -d "$project_path/.git" ]; then
+    echo "Git repository already initialized in $project_path"
+else
+    echo "Initializing Git repository in $project_path"
+    git init "$project_path"
+    cp content/basic/.gitignore "$project_path/.gitignore"
+    cd "$project_path" || exit 1
+    git add .
+    git commit -m "Initial commit."
+    echo "Git repository initialized and initial commit created."
+fi
+
+if [ $git_add_origin == "y" ]; then
+    # Example values — replace or extract from config
+    project_name="$project"
+    remote_name="origin"
+
+    # Construct GitHub SSH URL
+    repo_url="git@github.com:${gh_username}/${project_name}.git"
+
+    # Navigate to the project directory
+    cd "$project_path" || {
+    echo "Error: Could not cd into $project_path"
+    exit 1
+    }
+
+    # Check if it's already a git repo
+    if [ ! -d ".git" ]; then
+    echo "Initializing Git repository..."
+    git init
+    git add .
+    git commit -m "Initial commit."
+    fi
+
+    # Add remote if it doesn't exist
+    if git remote get-url "$remote_name" >/dev/null 2>&1; then
+        echo "Git remote '$remote_name' already exists: $(git remote get-url "$remote_name")"
+        echo "Current remotes:"
+        git remote -v
+        echo "==== Create a new repository on GitHub called $project_name, then push. ===="
+    else
+        git remote add "$remote_name" "$repo_url"
+        if [[ $? -eq 0 ]]; then
+            echo "Remote '$remote_name' added: $repo_url"
+            echo "Current remotes:"
+            git remote -v
+            echo "==== Create a new repository on GitHub called $project_name, then push. ===="
+        else
+            echo "Error: Failed to add remote."
+            echo "Current remotes:"
+            exit 1
+        fi
+    fi
+fi

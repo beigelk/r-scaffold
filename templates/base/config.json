@@ -1,5 +1,7 @@
 {
   "project": "new_project",
   "framework": "basic",
-  "destination": "/destination/path/"
+  "destination": "/destination/path",
+  "git_add_origin": "n",
+  "gh_username": "github_username"
 }
