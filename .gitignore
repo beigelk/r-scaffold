@@ -1,2 +1,3 @@
 # Ignore project files (project json files)
 projects/
+project_config_files/
