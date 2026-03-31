@@ -41,3 +41,66 @@ plot_pdf_and_png <- function(
     print(plot)
     dev.off()
 }
+
+###############################################################################
+# File:           utils.R
+# Purpose:        Utility/helper functions for common tasks
+#
+# Description:
+#   This file defines general-purpose functions used by multiple pipeline steps,
+#   such as logging, safe file reading, error handling, etc.
+#
+# Usage:
+#   Include this file in  R scripts via:
+#       source(file.path(Sys.getenv("SCRIPT_DIR", "."), "utils.R"))
+#
+# Notes:
+#   - Do not run this R file directly.
+#   - Keep functions general and side-effect-free if possible.
+#   - If adding new functions, document inline.
+###############################################################################
+
+#' Log a message with a timestamp and level
+#'
+#' Prints a formatted log message to the console including a timestamp and a log level.
+#'
+#' @param msg A character string containing the message to log.
+#' @param level A character string specifying the log level (e.g., "INFO", "ERROR", "DEBUG"). Default is "INFO".
+#'
+#' @return NULL. Called for side effects (prints to console).
+#'
+#' @examples
+#' log_message("Starting analysis")
+#' log_message("File not found", level = "ERROR")
+# log_message = function(msg, level = "INFO") {
+#   timestamp = format(Sys.time(), "%Y-%m-%d %H:%M:%S")
+#   cat(sprintf("[%s] [%s] %s\n", timestamp, level, msg))
+# }
+
+log_message = function(msg, level = "INFO") {
+  timestamp = format(Sys.time(), "%Y-%m-%d %H:%M:%S")
+  
+  # ANSI color codes
+  colors = c(
+    "START" = "\033[33m",
+    "INFO" = "\033[97m",
+    "PLOT" = "\033[38;5;240m",
+    "WARN" = "\033[38;5;208m",
+    "ERROR" = "\033[31m",
+    "DEBUG" = "\033[34m",
+    "MSG" = "\033[77m",
+    "DONE" = "\033[32m"
+  )
+  
+  reset = "\033[0m"  # reset color
+
+  level = toupper(level)
+  level_fmt = sprintf("%5s", level)
+  
+  # Pick color for the level, default to white
+  color = colors[[level]]
+  if (is.null(color)) color = "\033[37m"  # white
+  
+  # Print colored message
+  cat(sprintf("%s[%s] [%s] %s%s\n", color, timestamp, level_fmt, msg, reset))
+}
